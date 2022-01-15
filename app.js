@@ -5,6 +5,7 @@ const ProductData = [
     price: 120,
     img: "http://via.placeholder.com/600x400",
     stock: 5,
+    qnt: 1,
   },
   {
     id: 2,
@@ -12,6 +13,7 @@ const ProductData = [
     price: 160,
     img: "http://via.placeholder.com/600x400",
     stock: 5,
+    qnt: 1,
   },
   {
     id: 3,
@@ -19,6 +21,7 @@ const ProductData = [
     price: 140,
     img: "http://via.placeholder.com/600x400",
     stock: 5,
+    qnt: 1,
   },
   {
     id: 4,
@@ -26,6 +29,7 @@ const ProductData = [
     price: 120,
     img: "http://via.placeholder.com/600x400",
     stock: 5,
+    qnt: 1,
   },
   {
     id: 5,
@@ -33,6 +37,7 @@ const ProductData = [
     price: 180,
     img: "http://via.placeholder.com/600x400",
     stock: 5,
+    qnt: 1,
   },
   {
     id: 6,
@@ -40,57 +45,60 @@ const ProductData = [
     price: 110,
     img: "http://via.placeholder.com/600x400",
     stock: 5,
+    qnt: 1,
   },
 ];
 
 // store data in localstorage
 
 localStorage.setItem("products", JSON.stringify(ProductData));
-localStorage.setItem("cart", JSON.stringify([]));
 
 // create a single product
 
-function createProduct(item) {
-  const marktup = `<div class="card mb-4" style="width:32%">
-    <img
-      src=${item.img}
-      class="card-img-top product-image"
-      alt="product-image"
-    />
-    <div class="card-body">
-      <h4 class="card-title product-name">${item.name}</h5>
-      <h5 class="card-title my-3 product-price">Price : ${item.price}</h5>
-      <button  class="btn btn-primary add-to-cart">Add To Cart</button>
-    </div>
-  </div>`;
-  return marktup;
+const productImage = document.querySelectorAll(".product-image");
+const productName = document.querySelectorAll(".product-name");
+const productPrice = document.querySelectorAll(".product-price");
+const addToCartBtn = document.querySelectorAll(".add-to-cart");
+
+function createProduct(productInfo, index) {
+  const productImageArray = Array.from(productImage);
+  const productNameArray = Array.from(productName);
+  const productPriceArray = Array.from(productPrice);
+  const productCartBtnArray = Array.from(addToCartBtn);
+  productNameArray[index].textContent = productInfo.name;
+  productPriceArray[index].textContent = productInfo.price;
+  productImageArray[index].setAttribute("src", productInfo.img);
+  productCartBtnArray[index].setAttribute("data-id", productInfo.id);
 }
 
-var addToCartBtn;
-
 function productShow() {
-  const productListDom = document.querySelector(".product-list");
-  if (productListDom) {
-    const allProduct = JSON.parse(localStorage.getItem("products"));
-    allProduct.forEach((singleProduct) => {
-      const product = createProduct(singleProduct);
-      productListDom.insertAdjacentHTML("afterbegin", product);
-    });
-  }
-  addToCartBtn = document.querySelector(".add-to-cart");
+  const allProduct = JSON.parse(localStorage.getItem("products"));
+  allProduct.forEach((singleProduct, index) => {
+    createProduct(singleProduct, index);
+  });
 }
 
 window.addEventListener("load", productShow);
 
 // product add to cart
 
-if (addToCartBtn) {
-  addToCartBtn.addEventListener("click", productAddToCart(e));
-  console.log("hi");
-}
+Array.from(addToCartBtn).forEach((eachBtn) => {
+  eachBtn.addEventListener("click", productAddToCart);
+});
 
-console.log(addToCartBtn);
-
-function productAddToCart(e) {
-  console.log("hi");
+function productAddToCart(event) {
+  const productId = this.dataset.id;
+  const localProductList = JSON.parse(localStorage.getItem("products"));
+  const cartItem = localProductList.filter(
+    (product) => product.id == productId
+  );
+  const previusItem = JSON.parse(localStorage.getItem("cart"));
+  previusItem.map((item) => {
+    if (!item.id == cartItem[0].id) {
+      return localStorage.setItem(
+        "cart",
+        JSON.stringify([...previusItem, ...cartItem])
+      );
+    }
+  });
 }

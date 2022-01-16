@@ -49,6 +49,8 @@ const ProductData = [
   },
 ];
 
+const productCart = [];
+
 // store data in localstorage
 
 localStorage.setItem("products", JSON.stringify(ProductData));
@@ -86,19 +88,28 @@ Array.from(addToCartBtn).forEach((eachBtn) => {
   eachBtn.addEventListener("click", productAddToCart);
 });
 
-function productAddToCart(event) {
-  const productId = this.dataset.id;
-  const localProductList = JSON.parse(localStorage.getItem("products"));
-  const cartItem = localProductList.filter(
-    (product) => product.id == productId
+function productAddToCart() {
+  const currentProductId = Number(this.dataset.id);
+  const currentProductInfo = ProductData.filter(
+    (item) => item.id === currentProductId
   );
-  const previusItem = JSON.parse(localStorage.getItem("cart"));
-  previusItem.map((item) => {
-    if (!item.id == cartItem[0].id) {
-      return localStorage.setItem(
-        "cart",
-        JSON.stringify([...previusItem, ...cartItem])
-      );
-    }
-  });
+
+  if (productCart.length < 1) {
+    console.log("first Product");
+    productCart.push(currentProductInfo[0]);
+  }
+  if (productCart.length >= 1) {
+    productCart.map((item, index) => {
+      console.log(item.id === currentProductId);
+      if (item.id === currentProductId) {
+        productCart[index].qnt < productCart[index].stock
+          ? productCart[index].qnt++
+          : "";
+      } else {
+        productCart.push(currentProductInfo[0]);
+      }
+    });
+  }
+
+  console.log(productCart);
 }
